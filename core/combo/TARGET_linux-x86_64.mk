@@ -23,10 +23,10 @@ TARGET_ARCH_VARIANT := x86_64
 endif
 
 # Decouple NDK library selection with platform compiler version
-TARGET_NDK_GCC_VERSION := 4.9
+TARGET_NDK_GCC_VERSION := 5.3.1
 
 ifeq ($(strip $(TARGET_GCC_VERSION_EXP)),)
-TARGET_GCC_VERSION := 4.9
+TARGET_GCC_VERSION := 5.3.1
 else
 TARGET_GCC_VERSION := $(TARGET_GCC_VERSION_EXP)
 endif
@@ -76,11 +76,13 @@ KERNEL_HEADERS_ARCH   := $(libc_root)/kernel/uapi/asm-x86 # x86 covers both x86 
 KERNEL_HEADERS := $(KERNEL_HEADERS_COMMON) $(KERNEL_HEADERS_ARCH)
 
 TARGET_GLOBAL_CFLAGS += \
-			-O2 \
+			-O3 \
 			-Wa,--noexecstack \
 			-Werror=format-security \
 			-D_FORTIFY_SOURCE=2 \
 			-Wstrict-aliasing=2 \
+        	        -march=silvermont \
+                        -mtune=silvermont \
 			-ffunction-sections \
 			-finline-functions \
 			-finline-limit=300 \
@@ -91,7 +93,9 @@ TARGET_GLOBAL_CFLAGS += \
 			-fstack-protector \
 			-m64 \
 			-no-canonical-prefixes \
-			-fno-canonical-system-headers
+			-fno-canonical-system-headers \
+			-include $(android_config_h) \
+			-I $(dir $(android_config_h))
 
 # Help catch common 32/64-bit errors.
 TARGET_GLOBAL_CFLAGS += \
